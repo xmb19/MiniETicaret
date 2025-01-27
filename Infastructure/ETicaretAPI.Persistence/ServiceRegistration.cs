@@ -1,19 +1,27 @@
-﻿using ETicaretAPI.Application.Abstraction;
-using ETicaretAPI.Persistence.Concretes;
+﻿using Microsoft.EntityFrameworkCore;
+using ETicaretAPI.Persistence.Contexts;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace ETicaretAPI.Persistence
 {
     public static class ServiceRegistration
     {
+        
+
         public static void AddPersistenceServices(this IServiceCollection services)
         {
-            services.AddSingleton<IProductService, ProductService>();
+            ConfigurationManager configurationManager = new();
+            configurationManager.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../ETicaretAPI.API"));
+            configurationManager.AddJsonFile("appsettings.json"); //configurationManager.Add
+
+
+            services.AddDbContext<ETicaretAPIDbContext>(options => options.UseNpgsql(Configuration.ConnectionString));
         }
     }
 }
