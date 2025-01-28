@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ETicaretAPI.Persistence.Repositories
 {
-    internal class ReadRepository<T> : IReadRepository<T> where T : BaseEntity
+    public class ReadRepository<T> : IReadRepository<T> where T : BaseEntity
     {
         private readonly ETicaretAPIDbContext _context;
 
@@ -26,7 +26,8 @@ namespace ETicaretAPI.Persistence.Repositories
         => Table;
 
         public async Task<T> GetByIdAsync(string id)
-        => await Table.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+        => await Table.FindAsync(Guid.Parse(id));
+        //=> await Table.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
 
         public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method)
         => await Table.FirstOrDefaultAsync(method);

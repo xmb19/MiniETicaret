@@ -2,6 +2,7 @@
 using ETicaretAPI.Domain.Entities.Common;
 using ETicaretAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,32 +24,46 @@ namespace ETicaretAPI.Persistence.Repositories
 
         public DbSet<T> Table => _context.Set<T>();
 
-        public Task<bool> AddAsync(T model)
+        public async Task<bool> AddAsync(T model)
         {
-            throw new NotImplementedException();
+            EntityEntry<T> entityEntry = await Table.AddAsync(model);
+            return entityEntry.State == EntityState.Added;
         }
 
-        public Task<bool> AddRangeAsync(List<T> model)
+        public async Task<bool> AddRangeAsync(List<T> datas)
         {
-            throw new NotImplementedException();
+            await Table.AddRangeAsync(datas);
+            return true;
         }
 
-        public Task<bool> Remove(T moodel)
+        public bool Remove(T model)
         {
-            throw new NotImplementedException();
+            EntityEntry<T> entityEntry = Table.Remove(model);
+            return entityEntry.State == EntityState.Deleted;
         }
 
-        public Task<bool> Remove(string id)
+        public async Task<bool> RemoveAsync(string id)
         {
-            throw new NotImplementedException();
+            T model = await Table.FirstOrDefaultAsync(data => data.Id == Guid.Parse(id));
+            return Remove(model);
+
         }
 
-        public bool UpdateAsync(T model)
+       public bool Update(T model)
         {
-            throw new NotImplementedException();
+            EntityEntry<T> entityEntry = Table.Update(model);
+            return entityEntry.State == EntityState.Modified;
+        }
+        public async Task<int> SaveAsync()
+        => await _context.SaveChangesAsync();
+
+        public bool RemoveRange(List<T> datas)
+        {
+            Table.RemoveRange(datas);
+            return true;    
         }
     }
 
-  
+
 }
 
